@@ -45,7 +45,7 @@
 
 ### 블록
 
-- {} 블록 안 마지막 표현식의 결과는 블록 전체의 결과이다.
+- `{}` 블록 안 마지막 표현식의 결과는 블록 전체의 결과이다.
 - 이는 여타 다른 함수형 언어의 표현법과 동일하다.
 
 ### 함수
@@ -104,8 +104,8 @@ object 이름 {
 
 - 트레이트는 특정 필드와 메소드를 가지는 타입이고 다양한 트레이트와 결합할 수 있다.
 - 인터페이스처럼 함수를 선언하기도 하며, 기본 구현도 할 수 있다.
-- extends 키워드로 트레이트를 상속할 수 있고 override 키워드로 구현을 오버라이드할 수 있다.
-- 클래스는 트레이트의 다중상속도 가능하다
+- extends 키워드로 트레이트를 상속할 수 있고 override 키워드로 재구성 할 수 있다.
+- 클래스는 트레이트를 다중상속 할 수 있다.
 
 ```scala
 trait 이름 { 구현 }
@@ -149,7 +149,7 @@ object Main {
 
 - 생성자는 기본값을 가질 수 있다.
 - 생성시 `new 클래스명`으로 선언하게되면 정의한 기본값 대로 클래스가 생성된다.
-- 또한 명시적 지정을 혀용하기에, 생성시 명시적으로 멤버 변수명을 지정하여 생성할 수 있다.
+- 또한 명시적 지정을 허용하기에, 생성시 명시적으로 멤버 변수명을 지정하여 생성할 수 있다.
 - `new 클래스명(멤버변수명=값)`
 
 ### private 멤버, getter/setter
@@ -169,7 +169,7 @@ class Point {
   //getter
   def x = _x
   //setter
-  def x_= (newValue: Int): Unit = {
+  def x_ = (newValue: Int): Unit = {
     if (newValue < bound) _x = newValue else printWarning
   }
 
@@ -188,7 +188,7 @@ point1.y = 101 // 경고가 출력됩니다
 
 ## 4. trait
 
-> interface와 유사하다. 제네릭 타입과 추상메서드로 유용하다.
+> interface와 유사하다. 제네릭 타입과 추상메서드 사용시 유용하다.
 
 ### trait 사용
 
@@ -224,7 +224,8 @@ iterator.next()  // returns 1
 - 각 요소가 고유한 타입을 가지는 값
 - 여러값을 편리하게 리턴한다.
 - 튜플은 불변이다.
-- 튜플은 `Tuple요소갯수[타입들]`로 추론된다.
+- `(값, 값, 값)` 형식으로 초기화한다.
+- 튜플은 컴파일 시 `Tuple요소갯수[타입들]`로 추론된다.
 
 ```scala
 val ingredient = ("Sugar" , 25)
@@ -294,6 +295,7 @@ class StringIterator(s: String) extends AbsIterator {
 
 - 이제 StringIterator와 RichIterator를 합치고 싶다면 어떻게 해야할까?
 - 스칼라는 이것을 지원한다.
+- 새로운 클래스를 만들고 추상 클래스를 구현한 클래스를 상속받고, `with` 예약어로 함친다.
 
 ```scala
 object StringIteratorTest {
@@ -345,12 +347,12 @@ object FilterTest extends App {
 ## 9. 커링
 
 - 커링은 간단히 말해 매개변수가 2개이상인 함수에서 매개변수를 하나만 사용하여 호출하면,
-- 그 한개가 기억이 되었다가, 나머지 인자를 넣어서 마저 호출을 하면
+- 그 한개가 기억이 되었다가, 나중에 나머지 인자를 넣어서 마저 호출을 하면
 - 기존에 기억되었던 값을 이용해서 결과를 만들어내는 함수이다.
 
 ```scala
 def add(x: Int)(y: Int): Int = x + y
-add(2)
+add(2) //에러 발생 X
 println(add(3)) //5
 ```
 
@@ -429,7 +431,6 @@ object IntPair {
 - 코틀린의 companion object를 생각하면 편하다.
 - static으로 정의하길 원한다면 아래 처럼 정의하라
 - 또한 객체는 동반 클래스의 private 멤버에 접근이 가능하다.
-- 또한 apply를 사용하면 new 키워드 없이 클래스를 생성할 수 있다.
 
 ```scala
 class X(name: String) {
@@ -440,10 +441,10 @@ class X(name: String) {
 
 object X {
   private def foo = 42
-  def apply(name: String) = new X(name)
+  def create(name: String) = new X(name)
 }
 
-val x = X("first one")
+val x = X.crate("static factory method")
 ```
 
 ## 13. 제네릭 클래스
@@ -509,7 +510,7 @@ val catPrinter: Printer[B] = animalPrinter // 가능
 
 ### 상위 타입 경계
 
-- 제네릭을 정의할때 함수던 클래스던 정의하는 타입 `T`가 `S`보다 하위타입들어야한다.
+- 제네릭을 정의할때 함수던 클래스던 정의하는 타입 `T`가 `S`보다 하위타입들어야 할 경우 아래와 같이 정의가능하다.
 
 ```scala
 class Container[T <: SomeClass] {
@@ -520,7 +521,7 @@ class Container[T <: SomeClass] {
 
 ### 하위 타입 경계
 
-- 제네릭을 정의할때 정의하는 타입 `T`가 `S`보다 상위타입들어어야한다.
+- 제네릭을 정의할때 정의하는 타입 `T`가 `S`보다 상위타입들어어야 한다면 아래와 같이 정의 가능하다.
 
 ```scala
 class Container[T >: SomeClass] {
