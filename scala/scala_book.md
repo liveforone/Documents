@@ -149,7 +149,8 @@ object Main {
   - `AnyRef`: 모든 참조타입의 상위타입이다.
     - 값타입 이외의 모든 타입, `Null(null)`을 가진다.
   - `Nothing`: 모든 타입의 하위타입이다. 예외는 기본적으로 이 타입을 포함한다.
-  - `None` : 아무것도 없는 값을 표현한다.
+  - `Some` : option타입에서 값이 있을 경우 사용한다.
+  - `None` : option타입에서 값이 없을 경우 사용한다.
   - `Unit`: 빈값, 자바의 void와 유사하다.
   - `Nil` : 아무것도 없는 list를 표현한다.
 
@@ -326,6 +327,7 @@ object StringIteratorTest {
 ## 7. 고차함수
 
 - 다른 함수를 파라미터로 받거나, 함수를 리턴하는 함수이다.
+- 매개변수로 함수를 넘길때에는 함수를 호출하여 넘기는 것이 아닌 시그니처만 넘긴다.
 
 ```scala
 def apply(f: Int => String, v: Int) = f(v)
@@ -337,7 +339,7 @@ class Decorator(left: String, right: String) {
 object FunTest extends App {
   def apply(f: Int => String, v: Int) = f(v)
   val decorator = new Decorator("[", "]")
-  println(apply(decorator.layout, 7))
+  println(apply(decorator.layout, 7))  //decorator.layout이라는 layout 시그니처만 넘김
 }
 //실행결과는 [7]
 ```
