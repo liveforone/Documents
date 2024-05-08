@@ -328,6 +328,7 @@ object StringIteratorTest {
 
 - 다른 함수를 파라미터로 받거나, 함수를 리턴하는 함수이다.
 - 매개변수로 함수를 넘길때에는 함수를 호출하여 넘기는 것이 아닌 시그니처만 넘긴다.
+- 시그니처라는 것은 함수의 정의다. 정확히 말하면 함수의 타입이다.{ex : val f = (a: Int) => a 라는 함수의 정의는 f: (Int) => Int}
 
 ```scala
 def apply(f: Int => String, v: Int) = f(v)
