@@ -2,6 +2,7 @@
 
 - [스칼라북](#스칼라북)
   - [1. basic](#1-basic)
+    - [언더스코어 (\_)](#언더스코어-_)
     - [블록](#블록)
     - [함수](#함수)
     - [메서드](#메서드)
@@ -40,8 +41,23 @@
   - [15. 추상타입](#15-추상타입)
   - [16. 합성타입](#16-합성타입)
   - [17. 명시적으로 타입이 지정된 자가참조](#17-명시적으로-타입이-지정된-자가참조)
+  - [18. 로컬 타입 추론](#18-로컬-타입-추론)
+  - [19. 연산자](#19-연산자)
+  - [20. 임포트](#20-임포트)
 
 ## 1. basic
+
+### 언더스코어 (\_)
+
+- 스칼라에서 언더스코어는 다음과 같은 의미를 갖는다.
+
+1. import 구문에서는 all을 의미한다.
+2. 값들에 `=` 오른쪽에 올경우 디폴트 초기화를 의미한다.(값일 경우 디폴트 값, 래퍼런스일 경우 null)
+3. 고차함수에서 익명 파라미터 : `(5 to 8) map { _ + 1 }`
+4. 익명 파라미터
+5. 패턴매칭에서 나머지(자바에서 default)
+6. 제네릭에서 와일드 카드
+7. setter
 
 ### 블록
 
@@ -801,4 +817,68 @@ def graphTest: Unit = {
   n2.connectWith(n3)
   n1.connectWith(n3)
 }
+```
+
+## 18. 로컬 타입 추론
+
+- 스칼라는 코틀린이나 타입스크립트처럼 타입을 추론해준다.
+- 그러나 이에 완전히 의존해서는 안되는데 다음과 같은 상황이 그러하다.
+
+```scala
+object InferenceTest {
+  var obj = null
+  obj = new Object()
+}
+```
+
+- obj 변수는 null을 가진다. 타입은 명시되지 않았다. 그리고 그 obj에 `Object`타입을 생성하여 넣는다.
+- 이때 컴파일러는 obj의 타입을 `Null`로 생각한다.
+- 따라서 `Object`라는 타입이 obj 변수 안으로 들어오는 것을 허용하지 못한다.
+
+## 19. 연산자
+
+- 단일 파라미터로 취하는 모든 메서드를 중위 연산자로 사용할 수 있다.
+
+```scala
+class MyBool(x: Boolean) {
+  def and(that: MyBool): MyBool = if (x) that else this
+  def or(that: MyBool): MyBool = if (x) this else that
+  def negate: MyBool = new MyBool(!x)
+}
+```
+
+- 위와 같은 클래스를 정의했다.
+- 위 클래스의 메서드들은 아래처럼 중위 연산자로 사용할 수 있다.
+
+```scala
+def not(x: MyBool) = x negate; // 여기엔 세미콜론이 필요함
+def xor(x: MyBool, y: MyBool) = (x or y) and not(x and y)
+```
+
+## 20. 임포트
+
+- 스칼라의 임포트 규약은 아래와 같다.
+
+```scala
+import users._  // users 패키지 전부를 임포트한다
+import users.User  // User 클래스를 임포트한다
+import users.{User, UserPreferences}  // 선택된 멤버만 임포트한다
+import users.{UserPreferences => UPrefs}  // 이름을 바꾸고 임포트한다
+```
+
+- 스칼라와 자바의 다른점은 스칼라는 모든 부분에서 임포트가 가능하다. 마치 아래처럼 말이다
+
+```scala
+def sqrtplus1(x: Int) = {
+  import scala.math.sqrt
+  sqrt(x) + 1.0
+}
+```
+
+- 네이밍이 중복되거나 루트에서 임포트할때에는 `_root_`를 사용한다.
+
+```scala
+package accounts
+
+import _root_.users._
 ```
