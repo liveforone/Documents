@@ -27,6 +27,34 @@
 
 - 제네릭을 사용하면 ts/kotlin 모두 컴파일러가 타입 불일치를 해결하고, 디버깅을 보다 쉽게 할 수 있게 도와준다.
 
+## 제네릭 예시
+
+### 타입스크립트
+
+```typescript
+//any를 사용할 때 : Bad!
+export function validateFoundData(foundData: any): void {
+  ...
+}
+
+//제네릭을 사용할 때 : Good!
+export function validateFoundData<T>(foundData: T): void {
+  ...
+}
+```
+
+### 코틀린
+
+```kotlin
+fun validateFoundData(foundData: Any) {
+  ...
+}
+
+fun <T> validateFoundData(foundData: T) {
+  ...
+}
+```
+
 ## 번외 : 코틀린에서 Class<T>을 써야하는 경우
 
 - 타입스크립트/자바스크립트에서는 `JSON` 라이브러리를 통해 아주 손쉽게 객체를 직렬화, 역직렬화 할 수 있다.
@@ -42,3 +70,17 @@
    - 캐싱을 예로 들 때, save함수를 호출하는 경우가 아닌, read(get) 함수를 호출할 때 사용한다. 왜냐하면 이때 캐싱된 객체를 참조하기 때문이다.
 2. 동적으로 객체를 생성할 때 사용한다.
 3. 리플랙션을 사용할 때 사용한다.
+
+```kotlin
+fun <T> getByKey(
+        key: String,
+        clazz: Class<T>
+    ): T? {
+        val result = redisTemplate.opsForValue()[key].toString()
+        return if (result.isEmpty()) {
+            null
+        } else {
+            return objectMapper.readValue(result, clazz)
+        }
+    }
+```
