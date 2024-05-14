@@ -18,6 +18,19 @@
   - [구조체](#구조체)
     - [구조체 정의](#구조체-정의)
     - [구조 업데이트 구문](#구조-업데이트-구문)
+    - [메서드](#메서드)
+    - [self를 리턴하는 메서드](#self를-리턴하는-메서드)
+  - [enum과 패턴매칭](#enum과-패턴매칭)
+    - [enum basic](#enum-basic)
+    - [null safe - Option](#null-safe---option)
+    - [패턴매칭](#패턴매칭)
+    - [if-let](#if-let)
+  - [모듈](#모듈)
+    - [모듈 선언](#모듈-선언)
+    - [pub 키워드](#pub-키워드)
+    - [use 키워드](#use-키워드)
+    - [super 키워드](#super-키워드)
+    - [\* 연산자](#-연산자)
 
 ## update & uninstall command
 
@@ -163,3 +176,151 @@ let user2 = User {
     ..user1
 }
 ```
+
+### 메서드
+
+- 메서드는 함수와 비슷하게 생겼지만 첫번째 인수로 `&self`를 갖는다.
+- 구조체의 값을 변경하려면 `&mut self`를 인수로 받아야한다.
+- 또한 `impl` 키워드로 구현부에서 메서드를 선언해주어야한다.
+
+```rust
+struct Rectangle {
+    width: u32,
+    height: u32,
+}
+
+impl Rectangle {
+    fn area(&self) -> u32 {
+        self.width * self.height
+    }
+}
+```
+
+### self를 리턴하는 메서드
+
+- `Self`를 리턴하는 메서드가 있다.
+- 팩토리 메서드처럼 자기 자신의 타입을 만들어서 리턴하는 것인데, 이러한 메서드는 호출시 `::` 연산자를 사용한다.
+
+```rust
+impl Rectangle {
+    fn square(size: u32) -> Self {
+        Self {
+            width: size,
+            height: size,
+        }
+    }
+}
+
+Rectangle::square(3);
+```
+
+## enum과 패턴매칭
+
+### enum basic
+
+- 열거형은 `enum` 키워드를 사용하며 `::`를 통해 접근한다.
+- enum은 아무것도 값이 없는 상수만 사용할 수도 있고,
+- `(타입)`을 사용해서 튜플처럼 하나부터 원하는 수만큼 값을 넣을 수도 있다.
+- 또한 `{}`를 사용해서 구조체처럼 구현할 수도 있다.
+
+```rust
+enum Message {
+    Quit,
+    Move { x: i32, y: i32 },
+    Write(String),
+    ChangeColor(i32, i32, i32),
+}
+```
+
+### null safe - Option
+
+- rust는 Option타입이 존재한다.
+- 이는 enum으로 이루어져 있는데, 아래와 같다.
+
+```rust
+enum Option<T> {
+    None,
+    Some(T),
+}
+
+let some_number: Option<i32> = None;
+```
+
+### 패턴매칭
+
+- 패턴매칭은 `match 매개변수 { 조건 => 리턴밸류, }`의 형식을 따른다.
+- 내부 구현이 필요할 경우 리턴밸류 부분에서 `{}`를 통해서 블럭을 열어도 된다.
+- Option타입을 사용할때, 혹은 default 밸류가 필요할 때에는 `_`를 사용해서 default 밸류를 표현할 수 있다.
+- 특히나 Option타입의 경우 `Some`과 `None` 모두에 대해 매칭을 해주지 않으면 컴파일 에러가 발생한다.
+
+### if-let
+
+- 단 하나의 패턴에 대해서만 매칭시키고 싶을때 `if-let`구문을 사용한다.
+- 예시는 아래와 같다.
+
+```rust
+let config_max = Some(3u8);
+if let Some(max) = config_max {
+    println!("The maximum is configured to be {}", max);
+}
+```
+
+## 모듈
+
+- `mod`, `pub`, `use`, `crate` 키워드를 사용한다.
+- crate 루트파일 경로는 `src/lib.rs`
+
+### 모듈 선언
+
+- 모듈은 보통 `src/모듈이름.rs` 혹은 `src/모듈이름/mod.rs` 위치에서 모듈을 찾는다.
+- 하위 모듈이라면 `src/모듈이름/하위모듈.rs` 혹은 `src/모듈이름/하위모듈/mod.rs`위치에서 찾는다.
+
+### pub 키워드
+
+- 모듈안에 모듈을 정의할 수 있다. 그러나 private이 default로 적용된다.
+- 따라서 `pub`키워드로 open해주면 된다. 그러나 모듈안에 모듈이 있고, 그 모듈에 함수나 어떤 값들이 있다면 그 값들도 `pub` 키워드로 public 접근을 허용하지 않으면 사용할 수 없다.
+
+```rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+// 절대경로 사용
+crate::front_of_house::hosting::add_to_waitlist();
+
+// 상대경로 사용
+front_of_house::hosting::add_to_waitlist();
+```
+
+### use 키워드
+
+- use 키워드는 모듈을 범위 안(선언한 파일)으로 가져오는 키워드이다.
+- 따라서 아래 코드는 컴파일 에러가 발생한다.
+- 오류가 발생핳지 않으려면 custom 모듈 안에서 use 키워드로 hosting을 불러와야한다.
+
+```rust
+mod front_of_house {
+    pub mod hosting {
+        pub fn add_to_waitlist() {}
+    }
+}
+
+use crate::front_of_house::hosting;
+
+mod customer {
+    pub fn eat_at_restaurant() {
+        hosting::add_to_waitlist();
+    }
+}
+```
+
+### super 키워드
+
+- 파일 전체에서 어떤 모듈을 사용하길 원한다면 `super::경로`를 사용해서 가져오면 된다.
+
+### \* 연산자
+
+- `*`연산자를 활용하면 경로의 모든 공개 항목을 가져온다.
+- ex : `std::*;`
