@@ -36,6 +36,7 @@
     - [벡터로 여러 타입 저장하기](#벡터로-여러-타입-저장하기)
     - [문자열](#문자열)
     - [문자열 반복](#문자열-반복)
+  - [라이프 타임 - 생명주기 validator](#라이프-타임---생명주기-validator)
 
 ## update & uninstall command
 
@@ -382,3 +383,44 @@ for c in "Зд".chars() {
     println!("{c}");
 }
 ```
+
+## 라이프 타임 - 생명주기 validator
+
+- rust는 생명주기에 민감하다. rust를 사용하다보면 코드로 볼때에는 생명주기가 끝나지 않았는데, 컴파일에러가 발생하는 경우가 있다.
+- 바로 아래와 같은 코드이다.
+
+```rust
+fn main() {
+    let string1 = String::from("abcd");
+    let string2 = "xyz";
+
+    let result = longest(string1.as_str(), string2);
+    println!("The longest string is {}", result);
+}
+
+fn longest(x: &str, y: &str) -> &str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+```
+
+- string1과 string2는 동일한 생명주기를 같는다. 즉 같은 시간에 메모리가 해제된다.
+- longest 함수는 값의 소유권을 가져오기보다는 참조자를 가져오는 것이 더 나으므로 참조자를 가져왔다.
+- 참조 문자열이 아니라 참조 문자열 조각을 매개변수로 받도록하였다.
+- 러스트 컴파일러는 이 코드에서 함수에 전달될 구체적인 값을 이해하지 못하여서 에러가 발생한다.
+- 이때에는 lifetime annotation(`)을 사용해서 생명주기를 표현한다.
+
+```rust
+fn longest<'a>(x: &'a str, y: &'a str) -> &'a str {
+    if x.len() > y.len() {
+        x
+    } else {
+        y
+    }
+}
+```
+
+- 매개변수 x,y외 리턴값의 생명주기가 같다라고 명시적으로 표현함 으로써 컴파일러가 구체적인 매개변수와 리턴값을 파악하여 컴파일 할 수 있도록 도울 수 있다.
