@@ -87,8 +87,8 @@ public:
 * 복사생성자 만들때 주의 할점은 힙메모리에 접근하는 인스턴스가 있는경우 `=`으로 대입시키면안되고, `new` 키워드로 새로 메모리를 생성 후 대입한다.
 ```cpp
 class Name {
-public:
-  Name(const Name& name);
+  public:
+    Name(const Name& name);
 };
 
 Name(const Name& name() {
