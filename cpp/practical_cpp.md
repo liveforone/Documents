@@ -46,3 +46,7 @@ int function() { } //값을 리턴하는 함수
 int &num = function();
 ```
 
+## 배열
+### 배열생성
+* `T* name = new T[size];`
+* delete[] name;
