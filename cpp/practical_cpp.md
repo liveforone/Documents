@@ -95,6 +95,23 @@ Name(const Name& name() {
   인스턴스변수1 = name.인스턴스변수1;
 }
 ```
+### 초기화리스트
+* 초기화리스트는 생성과 초기화를 동시에하여 효율적이다.
+* 또한 래퍼런스 변수나, 상수를 클래스 내부에 넣고 싶다면 반드시 초기화 리스트를 사용해야한다.
+* 왜냐하면 이들은 생성과 동시에 초기화가 이루어져야하기 때문이다.
+```cpp
+class Marine {
+  int hp;
+  const int default_damage;
+public:
+  Marine();
+  Marine(int x, int y);
+  Marine(int x, int y, int default_damage);
+};
+
+Marine::Marine() : hp(50), default_damage(5) {} //초기화 리스트
+```
+
 
 ## 배열
 ### 배열생성
